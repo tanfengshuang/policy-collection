@@ -40,10 +40,10 @@ spec:
             noobaa-endpoint:
               limits:
                 cpu: 1
-                memory: 500Mi
+                memory: 2Gi
               requests:
                 cpu: 1
-                memory: 500Mi
+                memory: 2Gi
             rgw: {}
           storageDeviceSets:
           - count: 1
