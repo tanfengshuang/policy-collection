@@ -22,8 +22,8 @@ spec:
               requests:
                 storage: 50Gi
             storageClass: ocs-storagecluster-ceph-rbd
-    # Update BucketClass to use the new pvPool BackingStore
-    - complianceType: musthave
+    # Update BucketClass to use only the pvPool BackingStore (replace entire spec)
+    - complianceType: mustonlyhave
       objectDefinition:
         apiVersion: noobaa.io/v1alpha1
         kind: BucketClass
