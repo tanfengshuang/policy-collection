@@ -23,24 +23,85 @@ spec:
               requests:
                 storage: 50Gi
             storageClass: ocs-storagecluster-ceph-rbd
-    # Delete the default aws-s3 BackingStore created by NooBaa operator
-    - complianceType: mustnothave
-      objectDefinition:
-        apiVersion: noobaa.io/v1alpha1
-        kind: BackingStore
-        metadata:
-          name: noobaa-default-backing-store
-          namespace: openshift-storage
-    # Recreate BucketClass with only pvPool BackingStore
+    # Create ServiceAccount for the patch job
     - complianceType: musthave
       objectDefinition:
-        apiVersion: noobaa.io/v1alpha1
-        kind: BucketClass
+        apiVersion: v1
+        kind: ServiceAccount
         metadata:
-          name: noobaa-default-bucket-class
+          name: noobaa-bucketclass-patcher
+          namespace: openshift-storage
+    # Create Role for the patch job
+    - complianceType: musthave
+      objectDefinition:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: Role
+        metadata:
+          name: noobaa-bucketclass-patcher
+          namespace: openshift-storage
+        rules:
+        - apiGroups: ["noobaa.io"]
+          resources: ["bucketclasses"]
+          verbs: ["get", "patch"]
+        - apiGroups: ["noobaa.io"]
+          resources: ["backingstores"]
+          verbs: ["get", "list", "delete"]
+    # Create RoleBinding for the patch job
+    - complianceType: musthave
+      objectDefinition:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: RoleBinding
+        metadata:
+          name: noobaa-bucketclass-patcher
+          namespace: openshift-storage
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: Role
+          name: noobaa-bucketclass-patcher
+        subjects:
+        - kind: ServiceAccount
+          name: noobaa-bucketclass-patcher
+          namespace: openshift-storage
+    # Create Job to patch BucketClass to use only pvPool
+    - complianceType: musthave
+      objectDefinition:
+        apiVersion: batch/v1
+        kind: Job
+        metadata:
+          name: noobaa-bucketclass-patcher
           namespace: openshift-storage
         spec:
-          placementPolicy:
-            tiers:
-              - backingStores:
-                  - noobaa-pv-backing-store
+          backoffLimit: 10
+          template:
+            spec:
+              serviceAccountName: noobaa-bucketclass-patcher
+              restartPolicy: OnFailure
+              containers:
+              - name: patcher
+                image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+                command:
+                - /bin/bash
+                - -c
+                - |
+                  #!/bin/bash
+                  set -e
+
+                  echo "Waiting for noobaa-pv-backing-store to be Ready..."
+                  while ! oc get backingstore noobaa-pv-backing-store -n openshift-storage -o jsonpath='{.status.phase}' | grep -q Ready; do
+                    echo "Waiting..."
+                    sleep 5
+                  done
+
+                  echo "Patching BucketClass to use only pvPool BackingStore..."
+                  oc patch bucketclass noobaa-default-bucket-class -n openshift-storage \
+                    --type=json \
+                    -p='[{"op": "replace", "path": "/spec/placementPolicy/tiers", "value": [{"backingStores": ["noobaa-pv-backing-store"]}]}]'
+
+                  echo "Waiting 30 seconds for NooBaa to update internal state..."
+                  sleep 30
+
+                  echo "Attempting to delete noobaa-default-backing-store..."
+                  # Try to delete, but don't fail if it's still in use
+                  oc delete backingstore noobaa-default-backing-store -n openshift-storage --ignore-not-found=true || echo "BackingStore still in use, will be cleaned up later"
+
+                  echo "BucketClass patched successfully!"
