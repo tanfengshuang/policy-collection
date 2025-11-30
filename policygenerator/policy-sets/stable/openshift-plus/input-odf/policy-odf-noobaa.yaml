@@ -6,16 +6,6 @@ spec:
   remediationAction: enforce
   severity: medium
   object-templates:
-    # Configure NooBaa to NOT auto-create default aws-s3 BackingStore
-    - complianceType: musthave
-      objectDefinition:
-        apiVersion: noobaa.io/v1alpha1
-        kind: NooBaa
-        metadata:
-          name: noobaa
-          namespace: openshift-storage
-        spec:
-          manualDefaultBackingStore: true
     # Create pvPool BackingStore for local Ceph storage
     - complianceType: musthave
       objectDefinition:
