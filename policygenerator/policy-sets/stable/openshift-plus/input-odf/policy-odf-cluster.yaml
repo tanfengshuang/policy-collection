@@ -35,12 +35,24 @@ spec:
             mds: {}
             mgr: {}
             mon: {}
-            noobaa-core: {}
-            noobaa-db: {}
+            noobaa-core:
+              limits:
+                cpu: 2
+                memory: 8Gi
+              requests:
+                cpu: 1
+                memory: 4Gi
+            noobaa-db:
+              limits:
+                cpu: 2
+                memory: 8Gi
+              requests:
+                cpu: 1
+                memory: 4Gi
             noobaa-endpoint:
               limits:
-                cpu: 1
-                memory: 2Gi
+                cpu: 2
+                memory: 4Gi
               requests:
                 cpu: 1
                 memory: 2Gi
