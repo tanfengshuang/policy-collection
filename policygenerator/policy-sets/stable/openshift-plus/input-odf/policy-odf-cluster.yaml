@@ -31,8 +31,6 @@ spec:
           name: ocs-storagecluster
           namespace: openshift-storage
         spec:
-          multiCloudGateway:
-            manualDefaultBackingStore: true
           resources:
             mds: {}
             mgr: {}
