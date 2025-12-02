@@ -167,7 +167,7 @@ policies:
   controls:
     - SI-7 Software Firmware and Information Integrity
   dependencies:
-    - name: policy-odf-cluster
+    - name: policy-odf-status
   manifests:
     - path: input-odf/policy-odf-noobaa.yaml
 # ODF Policies - end

@@ -22,7 +22,8 @@ spec:
               requests:
                 storage: 100Gi
             storageClass: ocs-storagecluster-ceph-rbd
-    # Create default BucketClass using only pvPool BackingStore
+    # Update default BucketClass to use only pvPool BackingStore
+    # This will override the auto-created BucketClass that uses aws-s3
     - complianceType: musthave
       objectDefinition:
         apiVersion: noobaa.io/v1alpha1
