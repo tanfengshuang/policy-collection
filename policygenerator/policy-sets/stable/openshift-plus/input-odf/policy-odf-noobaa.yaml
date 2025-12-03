@@ -21,6 +21,13 @@ spec:
             resources:
               requests:
                 storage: 100Gi
+            podResources:
+              limits:
+                cpu: "2"
+                memory: 4Gi
+              requests:
+                cpu: "1"
+                memory: 2Gi
             storageClass: ocs-storagecluster-ceph-rbd
     # Update default BucketClass to use only pvPool BackingStore
     # This will override the auto-created BucketClass that uses aws-s3
