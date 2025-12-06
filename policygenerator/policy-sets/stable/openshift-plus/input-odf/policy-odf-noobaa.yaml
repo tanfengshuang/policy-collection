@@ -6,6 +6,41 @@ spec:
   remediationAction: enforce
   severity: medium
   object-templates:
+    # Create NooBaa CR with manual default backing store management
+    # This prevents operator from auto-creating aws-s3 or RGW backing stores
+    - complianceType: musthave
+      objectDefinition:
+        apiVersion: noobaa.io/v1alpha1
+        kind: NooBaa
+        metadata:
+          name: noobaa
+          namespace: openshift-storage
+        spec:
+          manualDefaultBackingStore: true
+          coreResources:
+            limits:
+              cpu: "2"
+              memory: 8Gi
+            requests:
+              cpu: "1"
+              memory: 4Gi
+          dbResources:
+            limits:
+              cpu: "2"
+              memory: 8Gi
+            requests:
+              cpu: "1"
+              memory: 4Gi
+          endpoints:
+            minCount: 2
+            maxCount: 2
+            resources:
+              limits:
+                cpu: "2"
+                memory: 4Gi
+              requests:
+                cpu: "1"
+                memory: 2Gi
     # Create pvPool BackingStore for local Ceph storage
     - complianceType: musthave
       objectDefinition:
@@ -27,8 +62,7 @@ spec:
                 memory: 4Gi
                 storage: 100Gi
             storageClass: ocs-storagecluster-ceph-rbd
-    # Update default BucketClass to use only pvPool BackingStore
-    # This will override the auto-created BucketClass that uses aws-s3
+    # Create default BucketClass using only pvPool BackingStore (single-tier)
     - complianceType: musthave
       objectDefinition:
         apiVersion: noobaa.io/v1alpha1
