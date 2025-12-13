@@ -52,7 +52,7 @@ spec:
               providerSpec:
                 value:
                   ami:
-                    id: '{{ fromConfigMap "policies" "opp-settings" (printf "%s-%s" (lookup "config.openshift.io/v1" "Infrastructure" "" "cluster").status.platformStatus.aws.region (fromClusterClaim "openshiftversion-major-minor")) }}'
+                    id: '{{ (index (lookup "machine.openshift.io/v1beta1" "MachineSet" "openshift-machine-api" "" "machine.openshift.io/cluster-api-machine-role=worker").items 0).spec.template.spec.providerSpec.value.ami.id }}'
                   apiVersion: awsproviderconfig.openshift.io/v1beta1
                   blockDevices:
                   - ebs:
