@@ -50,7 +50,11 @@ kind: MultiClusterObservability
 metadata:
   name: observability
 spec:
-  observabilityAddonSpec: {}
+  observabilityAddonSpec:
+    enableMetrics: true
+    interval: 300
+    scrapeSizeLimitBytes: 1073741824
+    workers: 4
   storageConfig:
     metricObjectStorage:
       name: thanos-object-storage
