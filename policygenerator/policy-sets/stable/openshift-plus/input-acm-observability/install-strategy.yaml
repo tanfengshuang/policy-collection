@@ -22,8 +22,9 @@ spec:
             type: Placements
             placements:
               # Install to hub cluster (local-cluster)
+              # References Placement created by community/openshift-plus-setup
               - name: placement-openshift-plus-hub
-                namespace: policies
+                namespace: open-cluster-management-global-set
               # Install to all managed clusters
               - name: placement-openshift-plus-clusters
                 namespace: policies
