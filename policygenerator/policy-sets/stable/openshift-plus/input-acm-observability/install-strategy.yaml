@@ -24,16 +24,6 @@ spec:
               # Install to hub cluster (local-cluster)
               - name: placement-openshift-plus-hub
                 namespace: policies
-                configs:
-                  - group: addon.open-cluster-management.io
-                    resource: addondeploymentconfigs
-                    name: observability-addon
-                    namespace: open-cluster-management
               # Install to all managed clusters
               - name: placement-openshift-plus-clusters
                 namespace: policies
-                configs:
-                  - group: addon.open-cluster-management.io
-                    resource: addondeploymentconfigs
-                    name: observability-addon
-                    namespace: open-cluster-management
