@@ -17,11 +17,21 @@ spec:
           # ACM 2.14: default was Placements (auto-install on all clusters)
           # ACM 2.15+: default changed to Manual (requires explicit ManagedClusterAddOn creation)
           # This configuration restores the automatic installation behavior
+          # Install to both hub cluster (local-cluster) and all managed clusters
           installStrategy:
             type: Placements
             placements:
-              - name: global
-                namespace: open-cluster-management-global-set
+              # Install to hub cluster (local-cluster)
+              - name: placement-openshift-plus-hub
+                namespace: policies
+                configs:
+                  - group: addon.open-cluster-management.io
+                    resource: addondeploymentconfigs
+                    name: observability-addon
+                    namespace: open-cluster-management
+              # Install to all managed clusters
+              - name: placement-openshift-plus-clusters
+                namespace: policies
                 configs:
                   - group: addon.open-cluster-management.io
                     resource: addondeploymentconfigs
