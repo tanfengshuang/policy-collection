@@ -127,11 +127,12 @@ policies:
   consolidateManifests: false
   categories:
     - CA Assessment Authorization and Monitoring
-  controls: 
+  controls:
     - CA-7 Continuous Monitoring
   dependencies:
     - name: policy-observability-storage
   manifests:
+    - path: input-acm-observability/install-strategy.yaml
     - path: input-acm-observability/operator.yaml
 # Observability Policy - end
 # ODF Policies - start

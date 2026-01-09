@@ -1,0 +1,29 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: ConfigurationPolicy
+metadata:
+  name: observability-addon-install-strategy
+spec:
+  remediationAction: enforce
+  severity: low
+  object-templates:
+    - complianceType: musthave
+      objectDefinition:
+        apiVersion: addon.open-cluster-management.io/v1alpha1
+        kind: ClusterManagementAddOn
+        metadata:
+          name: observability-controller
+        spec:
+          # Configure automatic installation strategy (restore ACM 2.14 behavior)
+          # ACM 2.14: default was Placements (auto-install on all clusters)
+          # ACM 2.15+: default changed to Manual (requires explicit ManagedClusterAddOn creation)
+          # This configuration restores the automatic installation behavior
+          installStrategy:
+            type: Placements
+            placements:
+              - name: global
+                namespace: open-cluster-management-global-set
+                configs:
+                  - group: addon.open-cluster-management.io
+                    resource: addondeploymentconfigs
+                    name: observability-addon
+                    namespace: open-cluster-management
