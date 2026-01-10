@@ -132,7 +132,6 @@ policies:
   dependencies:
     - name: policy-observability-storage
   manifests:
-    - path: input-acm-observability/install-strategy.yaml
     - path: input-acm-observability/operator.yaml
 # Observability Policy - end
 # ODF Policies - start
